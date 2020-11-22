@@ -1,0 +1,14 @@
+
+$(body).onSize = function() {
+  const (width, height) = $(.container).box(#dimension,#inner);
+
+  const w = self.intrinsicWidthMax();
+  const h = self.intrinsicHeight(w);
+  const (sw, sh) = view.screenBox(#frame, #dimension);
+  const (vx,vy) = view.box(#position, #client, #screen);
+
+  const n = (26 + 5);
+  const H = 22 + (n * ($(#amount-of-timers).value.toInteger() + 1)) + n;
+
+  view.move(vx, vy, w, H, true);
+}

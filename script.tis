@@ -1,0 +1,60 @@
+const DEBUGGING = true;
+
+DEBUGGING && view.connectToInspector && view.connectToInspector(rootElement, inspectorIpAddress);
+
+$(#about) << event click {
+  view.msgbox(#information,
+    "This application was coded by u/GirkovArpa.\nIt uses Sciter Engine (https://sciter.com),\n© Terra Informatica Software, Inc.",
+    "About"
+  );
+}
+
+const popup = view.window({
+  type: View.TOOL_WINDOW,
+  url: self.url("popup.html"),
+  state: View.WINDOW_SHOWN
+});
+
+var seconds = 0;
+var countingDown = false;
+
+event click $(#stop) (evt) {
+  countingDown = false;
+}
+
+event click $(#countdown) (evt) {
+  countingDown = true;
+}
+
+function formatTime(seconds) {
+  const h = Math.floor(seconds.toFloat() / 3600.0).toInteger();
+  const m = Math.floor((seconds % 3600) / 60).toInteger();
+  const s = Math.round(seconds % 60).toInteger();
+  return [
+    h,
+    m > 9 ? m : (h ? "0" + m : m || "0"),
+    s > 9 ? s : "0" + s
+  ].map(|n| n.toString().length < 2 ? "0" + n : n).join(":");
+}
+
+self.timer(1s, function() {
+  if (! countingDown) return true;
+  if (seconds == 0) {
+    if (countingDown) {
+      countingDown = false;
+      view.audio(self.url("sound.mp3")).play();
+    }
+    return true;
+  }
+  seconds--;
+  popup.root.$(div).text = formatTime(seconds);
+  return true;
+});
+
+event click $(.add) (evt) {
+  const [match, h, m, s] = evt.target.parent.$(input).value.match(/ ?(\d+): ?(\d+): ?(\d+)/).map(:n: n.toInteger());
+  seconds += s;
+  seconds += (m * 60);
+  seconds += (h * 60 * 60);
+  popup.root.$(div).text = formatTime(seconds);
+}

@@ -1,0 +1,63 @@
+include "sciter:reactor.tis";
+
+class App : Reactor.Component {
+  function attached() { 
+     App.instance = this; 
+  }
+
+  render() {
+    return <div .container>
+      <div.row>
+        <button #stop>Stop</button>
+        <button #countdown>Countdown</button>
+      </div>
+      <AmountOfTimers />
+        {(() => {
+          const inputs = [];
+          const amountEl = $(#amount-of-timers);
+          const amount = (amountEl === undefined) ? 2 : amountEl.value.toInteger();
+          for (var i = 0; i < amount; i++) {
+            inputs.push(<TimerInput index={i + 1} />);
+          }
+          return inputs; 
+        })()}
+    </div>
+  }
+}
+
+class AmountOfTimers : Reactor.Component {
+  function render() {
+    return  <div.row>
+        <label>Amount of Timers</label>
+        <select #amount-of-timers>
+          <option selected>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+          <option>6</option>
+          <option>7</option>
+          <option>8</option>
+        </select>
+      </div>;
+  }
+}
+
+event change $(#amount-of-timers) {
+  App.instance.update();
+  $(body).onSize();
+}
+
+class TimerInput : Reactor.Component {
+  function this(props) {
+    this.props = props;
+  }
+
+  render() {
+    return <div .row>
+      <label>Timer {this.props.index}</label>
+      <input type="masked" mask="##:##:##" value="000000" />
+      <button .add>Add</button>
+    </div>
+  }
+}
